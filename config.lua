@@ -16,12 +16,15 @@ Config = {}
 -- themselves in FiveM Settings > Key Bindings > FiveM > "Open Vehicle Spawner Menu".
 Config.OpenKey = 'F5'
 
--- If true, players must have the ace permission below to open the menu.
--- Grant it in server.cfg, e.g.:
---   add_ace group.admin vehiclespawner.use allow
+-- Master switch for the permission system. If false, every category is
+-- open to everyone and the per-category `permission` fields below are ignored.
+-- If true, a category is restricted only when it has a `permission` set;
+-- categories with no `permission` field stay open to everyone.
+--
+-- Grant a category's permission in server.cfg, e.g.:
+--   add_ace group.admin vehiclespawner.emergency allow
 --   add_principal identifier.license:xxxx group.admin
 Config.UsePermissions = false
-Config.Permission = 'vehiclespawner.use'
 
 -- Behavior
 Config.DeletePreviousVehicle = true    -- delete the last vehicle this player spawned when spawning a new one
@@ -36,41 +39,72 @@ Config.MenuTitle = 'Vehicle Spawner v2.0'
 Config.NotifyDuration = 5000
 
 -- Categories and vehicles shown in the menu.
--- label = what's displayed, model = the spawn code (vehicle name/hash string).
--- Add or remove as many categories/vehicles as you want.
+--
+-- Each category is a table with:
+--   permission = optional ace permission string. Only checked when
+--                Config.UsePermissions is true. Leave nil (or omit it)
+--                to keep the category open to everyone.
+--   vehicles   = list of { label, model } entries.
+--                label = what's displayed, model = the spawn code (vehicle name/hash string).
+--
+-- Add, remove, or rename as many categories/vehicles as you want — new
+-- categories are picked up automatically, no other code changes needed.
 Config.Vehicles = {
     ['Sports'] = {
-        { label = 'Adder',       model = 'adder' },
-        { label = 'Zentorno',    model = 'zentorno' },
-        { label = 'Entity XF',   model = 'entityxf' },
-        { label = 'Cheetah',     model = 'cheetah' },
+        permission = nil, -- open to everyone
+        vehicles = {
+            { label = 'Adder',       model = 'adder' },
+            { label = 'Zentorno',    model = 'zentorno' },
+            { label = 'Entity XF',   model = 'entityxf' },
+            { label = 'Cheetah',     model = 'cheetah' },
+        },
     },
     ['SUVs'] = {
-        { label = 'Baller',      model = 'baller' },
-        { label = 'Granger',     model = 'granger' },
-        { label = 'Patriot',     model = 'patriot' },
+        permission = nil,
+        vehicles = {
+            { label = 'Baller',      model = 'baller' },
+            { label = 'Granger',     model = 'granger' },
+            { label = 'Patriot',     model = 'patriot' },
+        },
     },
     ['Off-Road'] = {
-        { label = 'Sandking',    model = 'sandking' },
-        { label = 'Bifta',       model = 'bifta' },
-        { label = 'Dune Buggy',  model = 'dune' },
+        permission = nil,
+        vehicles = {
+            { label = 'Sandking',    model = 'sandking' },
+            { label = 'Bifta',       model = 'bifta' },
+            { label = 'Dune Buggy',  model = 'dune' },
+        },
     },
     ['Motorcycles'] = {
-        { label = 'Akuma',       model = 'akuma' },
-        { label = 'Bati 801',    model = 'bati' },
-        { label = 'PCJ-600',     model = 'pcj' },
+        permission = nil,
+        vehicles = {
+            { label = 'Akuma',       model = 'akuma' },
+            { label = 'Bati 801',    model = 'bati' },
+            { label = 'PCJ-600',     model = 'pcj' },
+        },
     },
     ['Aircraft'] = {
-        { label = 'Buzzard',     model = 'buzzard2' },
-        { label = 'Mammatus',    model = 'mammatus' },
-        { label = 'Velum',       model = 'velum' },
+        permission = nil,
+        vehicles = {
+            { label = 'Buzzard',     model = 'buzzard2' },
+            { label = 'Mammatus',    model = 'mammatus' },
+            { label = 'Velum',       model = 'velum' },
+        },
     },
     ['Emergency'] = {
-        { label = 'Police Cruiser', model = 'police' },
-        { label = 'Ambulance',      model = 'ambulance' },
-        { label = 'Fire Truck',     model = 'firetruk' },
+        -- Example of a restricted category: only checked if Config.UsePermissions = true.
+        -- Grant with: add_ace group.police vehiclespawner.emergency allow
+        permission = 'vehiclespawner.emergency',
+        vehicles = {
+            { label = 'Police Cruiser', model = 'police' },
+            { label = 'Ambulance',      model = 'ambulance' },
+            { label = 'Fire Truck',     model = 'firetruk' },
+        },
     },
     ['Utility'] = {
-        { label = 'Delete My Vehicle', model = 'delete' }, -- special entry, handled in client.lua
+        permission = nil,
+        vehicles = {
+            { label = 'Delete My Vehicle', model = 'delete' }, -- special entry, handled in client.lua
+        },
     },
 }

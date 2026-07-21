@@ -8,6 +8,7 @@ local currentView = 'categories' -- 'categories' or 'vehicles'
 local selectedIndex = 1
 local selectedCategory = nil
 local lastVehicle = nil
+local allowedCategories = {} -- categories this player is allowed to see, filtered server-side
 
 -- ===================== Helpers =====================
 
@@ -105,7 +106,8 @@ end
 
 -- ===================== Menu =====================
 
-local function OpenMenu()
+local function OpenMenu(categories)
+    allowedCategories = categories or {}
     menuOpen = true
     currentView = 'categories'
     selectedIndex = 1
@@ -116,17 +118,12 @@ local function CloseMenu()
 end
 
 local function GetCategoryList()
-    local list = {}
-    for category, _ in pairs(Config.Vehicles) do
-        list[#list + 1] = category
-    end
-    table.sort(list)
-    return list
+    return allowedCategories
 end
 
 local function GetVehicleList(category)
     local list = {}
-    for _, v in ipairs(Config.Vehicles[category]) do
+    for _, v in ipairs(Config.Vehicles[category].vehicles) do
         list[#list + 1] = v.label
     end
     return list
@@ -170,7 +167,7 @@ local function HandleSelect(entries)
         selectedIndex = 1
     else
         local vehData = nil
-        for _, v in ipairs(Config.Vehicles[selectedCategory]) do
+        for _, v in ipairs(Config.Vehicles[selectedCategory].vehicles) do
             if v.label == label then
                 vehData = v
                 break
@@ -210,8 +207,8 @@ RegisterCommand('vehiclespawner', function()
     TriggerServerEvent('vehiclespawner:requestOpen')
 end, false)
 
-RegisterNetEvent('vehiclespawner:openMenu', function()
-    OpenMenu()
+RegisterNetEvent('vehiclespawner:openMenu', function(categories)
+    OpenMenu(categories)
 end)
 
 RegisterNetEvent('vehiclespawner:notify', function(msg, notifyType)
