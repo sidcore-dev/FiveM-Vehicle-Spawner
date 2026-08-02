@@ -99,5 +99,8 @@ vehiclespawner/
 ├── fxmanifest.lua   Resource manifest (declares the mythic_notify dependency)
 ├── config.lua        All configurable settings
 ├── client.lua         Menu rendering, input handling, vehicle spawn/delete logic
-└── server.lua         Server-side permission check
+├── server.lua         Server-side permission check
+├── LICENSE            MIT license
+├── CHANGELOG.md        Version history
+└── .gitignore          OS/editor clutter
 ```
